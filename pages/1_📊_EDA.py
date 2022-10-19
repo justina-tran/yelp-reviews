@@ -1,15 +1,9 @@
-import streamlit as st
-import matplotlib.pyplot as plt
-import pandas as pd
-import plotly.express as px
-from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
-import nltk
-nltk.download('words')
+from viz import *
 from ast import literal_eval
-from yelp-reviews.viz import *
 
 review_df = pd.read_csv('data/nyc_reviews_final.csv')
 cleaned_review_df = pd.read_csv('data/reviews_cleaned.csv')
+cleaned_review_df.dropna(inplace=True)
 
 st.set_page_config(
     page_title="EDA",
@@ -55,7 +49,7 @@ all_words = [word for review in cleaned_review_df['cleaned'] for word in review]
 ok_words = [w for w in all_words if w.lower() in words or not w.isalpha()]
 corpus_wc = " ".join(ok_words)
 unique_words = set(ok_words)
-my_stopwords = set(STOPWORDS)
+my_stopwords = stopwords.words('english')
 corpus_wordcloud = " ".join(str(review) for review in cleaned_review_df.cleaned_text)
 
 with st.form(key="Selecting words to remove from the word cloud"):
@@ -76,3 +70,26 @@ else:
     ax.imshow(wordcloud, interpolation='bilinear')
     ax.axis("off")
     st.pyplot(fig)
+
+def run_ngram():
+    if st.session_state["selected_rating"]:
+        st.session_state["user_rating"] = st.session_state.selected_rating
+
+# plot n-grams
+user_select_rating = st.selectbox("Select a star rating (1-5)", options=("⭐️", "⭐️⭐️", "⭐️⭐️⭐️", "⭐️⭐️⭐️⭐️", "⭐️⭐️⭐️⭐️⭐️"), on_change=run_ngram, key="selected_rating")
+one_rating_corpus = [review for review in cleaned_review_df[cleaned_review_df['rating'] == '1 star rating']['cleaned_text']]
+two_rating_corpus = [review for review in cleaned_review_df[cleaned_review_df['rating'] == '2 star rating']['cleaned_text']]
+three_rating_corpus = [review for review in cleaned_review_df[cleaned_review_df['rating'] == '3 star rating']['cleaned_text']]
+four_rating_corpus = [review for review in cleaned_review_df[cleaned_review_df['rating'] == '4 star rating']['cleaned_text']]
+five_rating_corpus = [review for review in cleaned_review_df[cleaned_review_df['rating'] == '5 star rating']['cleaned_text']]
+
+if st.session_state["user_rating"] == "⭐️":
+    create_ngram(one_rating_corpus, 2)
+elif st.session_state["user_rating"] == "⭐️⭐️":
+    create_ngram(two_rating_corpus, 2)
+elif st.session_state["user_rating"] == "⭐️⭐️⭐️":
+    create_ngram(three_rating_corpus, 2)
+elif st.session_state["user_rating"] == "⭐️⭐️⭐️⭐️":
+    create_ngram(four_rating_corpus, 2)
+else:
+    create_ngram(five_rating_corpus, 2)
