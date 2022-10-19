@@ -3,6 +3,10 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import plotly.express as px
 from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
+import nltk
+nltk.download('words')
+from ast import literal_eval
+from yelp-reviews.viz import *
 
 review_df = pd.read_csv('data/nyc_reviews_final.csv')
 cleaned_review_df = pd.read_csv('data/reviews_cleaned.csv')
@@ -43,19 +47,32 @@ st.plotly_chart(fig, use_container_width=True)
 
 
 # plot wordclouds
-st.write("A word cloud of all words from the reviews after text preprocessing.")
+st.write("A word cloud of all words from the reviews after text preprocessing. Update the word cloud by entering any words to remove.")
+
+words = set(nltk.corpus.words.words()) # all english words
+cleaned_review_df['cleaned'] = cleaned_review_df['cleaned'].apply(literal_eval)
+all_words = [word for review in cleaned_review_df['cleaned'] for word in review]
+ok_words = [w for w in all_words if w.lower() in words or not w.isalpha()]
+corpus_wc = " ".join(ok_words)
+unique_words = set(ok_words)
 my_stopwords = set(STOPWORDS)
 corpus_wordcloud = " ".join(str(review) for review in cleaned_review_df.cleaned_text)
-wordcloud = WordCloud(width=1600, height=800, mode = "RGBA", background_color='white', stopwords=my_stopwords).generate(corpus_wordcloud)
-fig, ax = plt.subplots(figsize = (8,8))
-ax.imshow(wordcloud, interpolation='bilinear')
-ax.axis("off")
-st.pyplot(fig)
 
-st.write("Another word cloud but without the words: boba, bubble, place, tea, and drink.")
-my_stopwords.update(["boba", "bubble", "place", "tea", "drink"])
-wordcloud = WordCloud(width=1600, height=800, mode = "RGBA", background_color='white', stopwords=my_stopwords).generate(corpus_wordcloud)
-fig, ax = plt.subplots(figsize = (8,8))
-ax.imshow(wordcloud, interpolation='bilinear')
-ax.axis("off")
-st.pyplot(fig)
+with st.form(key="Selecting words to remove from the word cloud"):
+    user_stopwords = st.multiselect(label="Enter stopwords:", options=unique_words, help="Enter words to remove from the word cloud.")
+    submit_button = st.form_submit_button(label="Submit")
+    
+if submit_button:
+    st.write('A word cloud without the words:', ", ".join(w for w in user_stopwords))
+    my_stopwords.update(user_stopwords)
+    wordcloud = WordCloud(width=1600, height=800, mode = "RGBA", background_color='white', stopwords=my_stopwords).generate(corpus_wordcloud)
+    fig, ax = plt.subplots(figsize = (8,8))
+    ax.imshow(wordcloud, interpolation='bilinear')
+    ax.axis("off")
+    st.pyplot(fig)
+else:
+    wordcloud = WordCloud(width=1600, height=800, mode = "RGBA", background_color='white', stopwords=my_stopwords).generate(corpus_wordcloud)
+    fig, ax = plt.subplots(figsize = (8,8))
+    ax.imshow(wordcloud, interpolation='bilinear')
+    ax.axis("off")
+    st.pyplot(fig)
