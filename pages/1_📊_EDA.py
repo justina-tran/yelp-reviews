@@ -53,26 +53,19 @@ unique_words = set(ok_words)
 my_stopwords = stopwords.words('english')
 corpus_wordcloud = " ".join(str(review) for review in cleaned_review_df.cleaned_text)
 
-if 'user_stopwords' not in st.session_state:
-    st.session_state.user_stopwords = []
-
-def handle_submit(new_stopwords):
-    st.session_state.user_stopwords = new_stopwords
 
 with st.form(key="Selecting words to remove from the word cloud"):
     user_stopwords = st.multiselect(label="Enter stopwords:", options=unique_words, help="Enter words to remove from the word cloud.")
-    submit_button = st.form_submit_button(label="Submit", on_click=handle_submit, args=[user_stopwords])
+    submit_button = st.form_submit_button(label="Submit")
     if submit_button:
-        st.write('A word cloud without the words:', ", ".join(w for w in st.session_state.user_stopwords))
-        for s in user_stopwords:
-            st.session_state.user_stopwords.append(s)
-        wordcloud = WordCloud(width=1600, height=800, mode = "RGBA", background_color='white', stopwords=st.session_state.user_stopwords).generate(corpus_wordcloud)
+        st.write('A word cloud without the words:', ", ".join(w for w in user_stopwords))
+        wordcloud = WordCloud(width=1600, height=800, mode = "RGBA", background_color='white', stopwords=user_stopwords, random_state=12).generate(corpus_wordcloud)
         fig, ax = plt.subplots(figsize = (8,8))
         ax.imshow(wordcloud, interpolation='bilinear')
         ax.axis("off")
         st.pyplot(fig)
     else:
-        wordcloud = WordCloud(width=1600, height=800, mode = "RGBA", background_color='white', stopwords=st.session_state.user_stopwords).generate(corpus_wordcloud)
+        wordcloud = WordCloud(width=1600, height=800, mode = "RGBA", background_color='white', stopwords=user_stopwords, random_state=12).generate(corpus_wordcloud)
         fig, ax = plt.subplots(figsize = (8,8))
         ax.imshow(wordcloud, interpolation='bilinear')
         ax.axis("off")
