@@ -7,7 +7,6 @@ import nltk
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
-import creds
 nltk.download('stopwords')
 nltk.download('words')
 
@@ -47,7 +46,7 @@ def plot_ngram(text, n):
   st.plotly_chart(fig, use_container_width=True)
 
 def plot_map(df):
-  px.set_mapbox_access_token(creds.mapbox_token)
+  px.set_mapbox_access_token(mapbox_token)
   fig = px.scatter_mapbox(df, lat="latitude", lon="longitude", hover_name="name", 
                           hover_data=['avg_rating','review_count'],
                           color='avg_rating', color_continuous_scale=px.colors.sequential.Sunset, 
