@@ -7,12 +7,13 @@ import nltk
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
+import creds
 nltk.download('stopwords')
 nltk.download('words')
 
 stop_words = stopwords.words('english')
 
-def create_ngram(text, n):
+def plot_ngram(text, n):
   # ngrams counts
   count_vect = CountVectorizer(ngram_range = (n,n),
                                max_features=500,
@@ -43,4 +44,12 @@ def create_ngram(text, n):
   # plot ngram freq ordered by tfidf score
   words = ranking.sort_values('tfidf', ascending = False).head(10)
   fig = px.bar(words, x="term", y="counts", hover_data=["tfidf"], title="N-gram Frequency Using TF-IDF")
+  st.plotly_chart(fig, use_container_width=True)
+
+def plot_map(df):
+  px.set_mapbox_access_token(creds.mapbox_token)
+  fig = px.scatter_mapbox(df, lat="latitude", lon="longitude", hover_name="name", 
+                          hover_data=['avg_rating','review_count'],
+                          color='avg_rating', color_continuous_scale=px.colors.sequential.Sunset, 
+                          size_max=15, zoom=10, title="Store Location")
   st.plotly_chart(fig, use_container_width=True)
