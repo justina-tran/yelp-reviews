@@ -12,7 +12,7 @@ def run():
     st.sidebar.success("Select a demo above.")
 
     st.write(""" The goal of this project is to analyze reviews on Yelp from NYC boba shops and \
-        find relationships between words and star ratings using NLP techniques. I gathered data from \
+        find relationships between words and star ratings using NLP techniques. I gathered data by \
         webscraping reviews on Yelp from 50 boba stores in NYC. I performed EDA, text preprocessing steps, \
         and text analysis, including sentiment analysis, n-grams, and topic modeling. I also experimented \
         with building a classification model to predict the star rating of a review.

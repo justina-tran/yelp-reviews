@@ -58,6 +58,7 @@ def run_ngrams():
     st.session_state["user_ngram"] = st.session_state.selected_ngram
 
 st.subheader("N-gram Analysis")
+st.write("Analyze the text frequencies by picking a star rating and a n-gram.")
 col1, col2 = st.columns(2)
 with col1: 
     user_select_rating = st.selectbox("Select a star rating (1-5):", options=("⭐️", "⭐️⭐️", "⭐️⭐️⭐️", "⭐️⭐️⭐️⭐️", "⭐️⭐️⭐️⭐️⭐️"), on_change=run_rating, key="selected_rating")
