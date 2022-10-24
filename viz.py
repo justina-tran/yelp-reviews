@@ -52,3 +52,11 @@ def plot_map(df):
                           color='avg_rating', color_continuous_scale=px.colors.sequential.Sunset, 
                           size_max=15, zoom=10, title="Store Location")
   st.plotly_chart(fig, use_container_width=True)
+
+def plot_proba(proba):
+    classes = ['1','2','3','4','5']
+    fig = px.bar(x=proba, y=classes, orientation='h', title='Model Prediction', labels={
+                     "x": "probability",
+                     "y": "rating"
+                 })
+    st.plotly_chart(fig, use_container_width=True)
