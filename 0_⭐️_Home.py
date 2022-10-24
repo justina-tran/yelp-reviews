@@ -33,5 +33,8 @@ def run():
         * sentiment analysis for each star rating
     """)
 
+    st.subheader("📌 Classification")
+    st.markdown("""* select a sample review or input any review to see model's prediction for star rating""")
+
 if __name__ == "__main__":
     run()
